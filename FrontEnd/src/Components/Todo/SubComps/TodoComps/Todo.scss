@@ -1,0 +1,16 @@
+.todo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: .5rem;
+
+    border-bottom: 0.5px rgba(0, 0, 0, 0.2) solid;
+
+    span{
+        &.completed{
+            text-decoration: line-through;
+            color: gray;
+        }
+    }
+}
