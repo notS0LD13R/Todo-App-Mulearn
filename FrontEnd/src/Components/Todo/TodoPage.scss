@@ -8,4 +8,27 @@
 
     font-family: var(--minor-font);
     font-weight: 500;
+
+    
+        font-family: var(--minor-font);
+        color: white;
+        font-size: larger;
+
+        
+
+        a{
+            font-family: var(--minor-font);
+            color: white;
+            font-size: larger;
+
+            text-decoration: underline;
+            cursor: pointer;
+
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 1rem;
+
+        }
+    
 }

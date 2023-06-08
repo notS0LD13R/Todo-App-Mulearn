@@ -6,7 +6,7 @@ import Todo from './TodoComps/Todo'
 import { todoProps } from '../../../types/api'
 
 interface TodoListprops{
-  todos:Array<todoProps>
+  todos:Array<todoProps>|[]
 }
 
 export default function TodoList({todos}:TodoListprops) {
@@ -15,7 +15,7 @@ export default function TodoList({todos}:TodoListprops) {
 
   return (
     <div className='todolist flex-col'>
-      {todos.map((props,pos)=> < Todo {...props} id={`${pos}`} /> )}
+      {todos.map((props,pos)=> < Todo {...props} id={`${pos}`} key={pos}/> )}
       <FilterBar />
     </div>
   )
