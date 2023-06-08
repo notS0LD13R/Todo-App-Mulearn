@@ -33,6 +33,7 @@
 
         outline: white solid 2px;
         outline-offset: -4px;
+        border-radius: .5rem;
 
         &.error{
             background-color: var(--status-red);

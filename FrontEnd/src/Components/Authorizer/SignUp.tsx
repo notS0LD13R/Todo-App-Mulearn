@@ -52,10 +52,10 @@ export default function SignUp(props:SignUpProps) {
       
       <form onSubmit={handleSubmit}>
         
-        <input type="text" ref={user} placeholder='Enter Username'/>
+        <input type="text" ref={user} placeholder='Enter Username' required/>
         
-        <input type="password" ref={pass} placeholder='Password'/>
-        <input type="password" ref={confpass} placeholder='Confirm Password'/>
+        <input type="password" ref={pass} placeholder='Password' required/>
+        <input type="password" ref={confpass} placeholder='Confirm Password' required/>
 
         <input type="submit" value="SignUp" />
 

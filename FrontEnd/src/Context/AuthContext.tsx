@@ -30,7 +30,7 @@ export function AuthProvider({children}:{children:ReactNode}){
     const [data,setData]=useState<UserData|null>(null)
 
     function login(username:string,password:string):string{
-        console.log('login',username,password)
+        // console.log('login:',username,password)
 
         
         if (localStorageFlag){
@@ -52,7 +52,7 @@ export function AuthProvider({children}:{children:ReactNode}){
     }
 
     function register(username:string,password:string):string{
-        console.log(username,password)
+        // console.log('register:',username,password)
         if (localStorageFlag){
             const doc=JSON.parse(localStorage.getItem('users') ??'{}')
 

@@ -1,12 +1,13 @@
 import './App.scss'
 
-import {useState} from 'react';
 
 import Authorizer from './Components/Authorizer/Authorizer'
 import TodoPage from './Components/Todo/TodoPage'
+import { useAuth } from './Context/AuthContext';
 function App() {
 
-	const [user,setUser]=useState<boolean>(false)
+	const {data} = useAuth()
+	
 
 	return (
 		<>
@@ -15,8 +16,7 @@ function App() {
 			</div>
 
 			<main className='grid-center'>
-				<button onClick={()=>setUser(!user)} style={{position:'absolute',top:0}}>change</button>
-				{user?<TodoPage />:<Authorizer />}
+				{data?<TodoPage />:<Authorizer />}
 			</main>
 		</>
 	)
