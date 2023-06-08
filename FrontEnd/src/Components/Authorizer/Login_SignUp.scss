@@ -20,6 +20,24 @@
         -webkit-background-clip: text;
         background-clip: text;
     }
+
+    .status{
+        color: white;
+        background-color: var(--status-green);
+
+        text-align: center;
+        font-family: var(--minor-font);
+
+        padding: 0.5rem;
+        margin: 0.5rem;
+
+        outline: white solid 2px;
+        outline-offset: -4px;
+
+        &.error{
+            background-color: var(--status-red);
+        }
+    }
     
     form{
         display: flex;

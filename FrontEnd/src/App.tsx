@@ -16,7 +16,7 @@ function App() {
 
 			<main className='grid-center'>
 				<button onClick={()=>setUser(!user)} style={{position:'absolute',top:0}}>change</button>
-				{user?<Authorizer />:<TodoPage />}
+				{user?<TodoPage />:<Authorizer />}
 			</main>
 		</>
 	)
