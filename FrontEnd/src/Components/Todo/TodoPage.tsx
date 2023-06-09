@@ -1,5 +1,4 @@
 import { useAuth } from '../../Context/AuthContext'
-import {useState} from 'react'
 
 import './TodoPage.scss'
 

@@ -4,7 +4,7 @@ import './FilterBar.scss'
 
 export default function FilterBar({setFilter}:{setFilter:React.Dispatch<React.SetStateAction<"all" | "active" | "completed">>}) {
   
-  const {deleteTodo} = useAuth()
+  const {deleteTodo,todoList} = useAuth()
 
   
 
@@ -12,7 +12,7 @@ export default function FilterBar({setFilter}:{setFilter:React.Dispatch<React.Se
 
   return (
     <div className='filterbar'>
-      <span>5 Left</span>
+      <span>{todoList.length} Left</span>
       
       <fieldset >
         
