@@ -13,7 +13,7 @@ function App() {
 	return (
 		<>
 			<div className='bg-img'>
-				<h1 >TODO</h1>
+				<h1 >TODO APP</h1>
 			</div>
 
 			<main className='grid-center'>
