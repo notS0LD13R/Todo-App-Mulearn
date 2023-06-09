@@ -1,18 +1,20 @@
+import { todoProps } from '../../../../types/api'
+
+
 import './Todo.scss'
 
 import { Tick,Cross } from './Tick_Cross'
-import { todoProps } from '../../../../types/api'
 
-interface TodoProps extends todoProps{
-  id:string
-}
 
-export default function Todo(props:TodoProps) {
+
+export default function Todo(props:todoProps) {
+  
+
   return (
     <div className='todo' id={'todo'+props.id}>
-      <Tick id={props.id}/>
-      <span>{props.task}</span>
-      <Cross />
+      <Tick id={props.id} checked={props.isCompleted}/>
+      <span className={`${props.isCompleted?'completed':''}`}>{props.title}</span>
+      <Cross id={props.id}/>
     </div>
   )
 }

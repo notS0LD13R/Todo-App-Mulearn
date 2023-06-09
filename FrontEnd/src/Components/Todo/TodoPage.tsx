@@ -8,14 +8,14 @@ import TodoList from './SubComps/TodoList'
 
 export default function TodoPage() {
   
-  const {data,logout} = useAuth()
+  const {todoList,logout} = useAuth()
   
+
   return (
     <div className='todopage flex-col'>
         <a onClick={logout}>Logout</a>
         <SearchBar />
-        <TodoList todos={data?.todoList??[]}/>
-            
+        <TodoList todos={todoList??[]}/>
     </div>
   )
 }

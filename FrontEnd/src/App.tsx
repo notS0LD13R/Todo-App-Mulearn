@@ -1,13 +1,14 @@
+import {useEffect} from 'react'
 import './App.scss'
-
 
 import Authorizer from './Components/Authorizer/Authorizer'
 import TodoPage from './Components/Todo/TodoPage'
 import { useAuth } from './Context/AuthContext';
 function App() {
 
-	const {data} = useAuth()
+	const {username,getTodo} = useAuth()
 	
+	useEffect(()=>{if(username)getTodo()},[username,getTodo])
 
 	return (
 		<>
@@ -16,7 +17,7 @@ function App() {
 			</div>
 
 			<main className='grid-center'>
-				{data?<TodoPage />:<Authorizer />}
+				{username?<TodoPage />:<Authorizer />}
 			</main>
 		</>
 	)

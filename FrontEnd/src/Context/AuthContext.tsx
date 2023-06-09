@@ -1,20 +1,22 @@
 import { todoProps } from "../types/api"
 import {createContext,useContext,
     useState,
+    useCallback,
     ReactNode} from 'react'
 
 interface UserData{
-    username:string,
+    username:string|null,
     todoList:Array<todoProps>|[]
 }
 
-interface AuthContextProps{
-    data:UserData|null
+interface AuthContextProps extends UserData{
     login:(username:string,password:string)=>string,
     register:(username:string,password:string)=>string,
-    logout:()=>void
-
-
+    logout:()=>void,
+    getTodo:()=>void,
+    addTodo:(title:string)=>void,
+    updateTodo:(id:string,isCompleted:boolean)=>void,
+    deleteTodo:(id:string)=>void
 }
 
 const AuthContext=createContext<AuthContextProps|null>(null)
@@ -27,25 +29,24 @@ export function useAuth(): AuthContextProps {
 export function AuthProvider({children}:{children:ReactNode}){
 
     const localStorageFlag=true
-    const [data,setData]=useState<UserData|null>(null)
+    const [user,setUser]=useState<string|null>(null)
+    const [todoList,setTodoList]=useState<Array<todoProps>|[]>([])
 
+    
     function login(username:string,password:string):string{
         // console.log('login:',username,password)
-
-        
         if (localStorageFlag){
             let doc=JSON.parse(localStorage.getItem('users') ??'{}')
 
             if(!doc[username])
-                throw "UserNotFound"
+                throw "UserNotFoundatLogin"
             
             doc=doc[username]
 
             if(doc.password !== password)
                 throw "IncorrectPassword"
 
-            delete doc.password
-            setData({...doc})
+            setUser(username)
         }
 
         return "Login Successful"
@@ -65,7 +66,6 @@ export function AuthProvider({children}:{children:ReactNode}){
                 todoList:[]
             }
 
-            console.log(doc)
             localStorage.setItem('users',JSON.stringify(doc))
         }
 
@@ -74,13 +74,88 @@ export function AuthProvider({children}:{children:ReactNode}){
     }    
 
     function logout(){
-        setData(null);
+        setUser(null);
     }
+
+    const getTodo= useCallback(()=>{
+
+        if (localStorageFlag){
+            if(!user)
+                throw "UserNotFoundatgetTodo"
+            const doc=JSON.parse(localStorage.getItem('users') ??'{}')[user!]
+            console.log(doc['todoList'])
+            setTodoList(doc['todoList'])
+        } 
+    },[localStorageFlag,user])
+    
+    function addTodo(title:string){
+        
+        if (localStorageFlag){
+            if(!user)
+                throw "UserNotFound"
+
+            const newTodo:todoProps= {
+                id:`${title}${~~(Math.random()*100)}`,
+                title:title,
+                isCompleted:false,
+                created:new Date(),
+                updated:new Date(),
+                host:1
+            }
+            const doc=JSON.parse(localStorage.getItem('users') ??'{}')
+            doc[user!]['todoList'].push(newTodo)
+            setTodoList(doc[user!]['todoList'])
+            localStorage.setItem('users',JSON.stringify(doc))
+        }
+    }
+
+    function updateTodo(id:string,isCompleted:boolean){
+        
+        if(localStorageFlag){
+            if(!user)
+                throw "UserNotFound"
+
+            const doc=JSON.parse(localStorage.getItem('users') ??'{}')
+            
+            //searching obj with correct index and 
+            //updating isCompleted
+            doc[user!]['todoList'][ 
+                doc[user!]['todoList'].findIndex((obj:todoProps) => obj.id===id)
+            ].isCompleted=isCompleted
+
+            setTodoList(doc[user!]['todoList'])
+            localStorage.setItem('users',JSON.stringify(doc))
+        }
+    }
+
+    function deleteTodo(id:string){
+        if(localStorageFlag){
+            if(!user)
+                throw "UserNotFound"
+
+            const doc=JSON.parse(localStorage.getItem('users') ??'{}')
+            
+            //searching obj with correct index and deleting 
+            doc[user!]['todoList'].splice( 
+                doc[user!]['todoList'].findIndex((obj:todoProps) => obj.id===id)
+            ,1)
+
+            setTodoList(doc[user!]['todoList'])
+            localStorage.setItem('users',JSON.stringify(doc))
+        }
+    }
+
+
     const value:AuthContextProps={
-        data:data,
+        username:user,
+        todoList:todoList,
         login:login,
         register:register,
-        logout:logout
+        logout:logout,
+        getTodo:getTodo,
+        addTodo:addTodo,
+        updateTodo:updateTodo,
+        deleteTodo:deleteTodo
     }
     return(
         <>

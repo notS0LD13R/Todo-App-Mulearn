@@ -11,11 +11,10 @@ interface TodoListprops{
 
 export default function TodoList({todos}:TodoListprops) {
   
-  
-
+  console.log('todlost',todos)
   return (
     <div className='todolist flex-col'>
-      {todos.map((props,pos)=> < Todo {...props} id={`${pos}`} key={pos}/> )}
+      {todos.map((props,pos)=> < Todo {...props} key={pos}/> )}
       <FilterBar />
     </div>
   )

@@ -1,3 +1,8 @@
 export interface todoProps{
-    task:string
+    id:string,
+    title:string,
+    isCompleted: boolean,
+    updated: Date,
+    created: Date,
+    host: 1
 }

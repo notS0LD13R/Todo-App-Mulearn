@@ -8,6 +8,7 @@
     border-bottom: 0.5px rgba(0, 0, 0, 0.2) solid;
 
     span{
+        color: black;
         &.completed{
             text-decoration: line-through;
             color: gray;
