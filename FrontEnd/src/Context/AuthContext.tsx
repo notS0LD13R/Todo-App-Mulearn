@@ -16,7 +16,7 @@ interface AuthContextProps extends UserData{
     getTodo:()=>void,
     addTodo:(title:string)=>void,
     updateTodo:(id:string,isCompleted:boolean)=>void,
-    deleteTodo:(id:string)=>void
+    deleteTodo:(id:string,clearCompleted?:boolean)=>void
 }
 
 const AuthContext=createContext<AuthContextProps|null>(null)
@@ -128,7 +128,7 @@ export function AuthProvider({children}:{children:ReactNode}){
         }
     }
 
-    function deleteTodo(id:string){
+    function deleteTodo(id:string,clearCompleted=false){
         if(localStorageFlag){
             if(!user)
                 throw "UserNotFound"
@@ -136,9 +136,13 @@ export function AuthProvider({children}:{children:ReactNode}){
             const doc=JSON.parse(localStorage.getItem('users') ??'{}')
             
             //searching obj with correct index and deleting 
-            doc[user!]['todoList'].splice( 
+            if(clearCompleted){
+                doc[user!]['todoList']=
+                doc[user!]['todoList'].filter((item:todoProps)=>!item.isCompleted)
+            }
+            else{doc[user!]['todoList'].splice( 
                 doc[user!]['todoList'].findIndex((obj:todoProps) => obj.id===id)
-            ,1)
+            ,1)}
 
             setTodoList(doc[user!]['todoList'])
             localStorage.setItem('users',JSON.stringify(doc))

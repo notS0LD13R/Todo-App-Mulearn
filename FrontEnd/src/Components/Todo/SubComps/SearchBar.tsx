@@ -11,7 +11,6 @@ export default function SearchBar() {
 
   const handleSubmit = (e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
-    console.log(newTodo.current?.value)
     if(newTodo.current?.value)
         addTodo(newTodo.current?.value)
 

@@ -1,38 +1,45 @@
+import { useAuth } from '../../../Context/AuthContext'
 import './FilterBar.scss'
 
-import React from 'react'
 
-export default function FilterBar() {
+export default function FilterBar({setFilter}:{setFilter:React.Dispatch<React.SetStateAction<"all" | "active" | "completed">>}) {
   
-  const handleRadioChange=(e:React.MouseEvent<HTMLElement>)=>{
-    console.log(e.target)
-  }
+  const {deleteTodo} = useAuth()
+
   
-  
+
+
+
   return (
     <div className='filterbar'>
       <span>5 Left</span>
       
-      <fieldset onClick={handleRadioChange}>
+      <fieldset >
         
         <div>
         <input type="radio" name="filter" id="radioAll" defaultChecked/>
-        <label htmlFor="radioAll">All</label>
+        <label htmlFor="radioAll" onClick={()=>setFilter('all')}>
+          All
+        </label>
         </div>
 
         <div>
         <input type="radio" name="filter" id="radioActive" />
-        <label htmlFor="radioActive">Active</label>
+        <label htmlFor="radioActive" onClick={()=>setFilter('active')}>
+          Active
+        </label>
         </div>
 
         <div>
         <input type="radio" name="filter" id="radioCompleted" />
-        <label htmlFor="radioCompleted">Completed</label>
+        <label htmlFor="radioCompleted" onClick={()=>setFilter('completed')}>
+          Completed
+        </label>
         </div>
 
       </fieldset>
 
-      <button>
+      <button onClick={()=>deleteTodo("placeholderid",true)}>
         Clear Completed
       </button>
     </div>

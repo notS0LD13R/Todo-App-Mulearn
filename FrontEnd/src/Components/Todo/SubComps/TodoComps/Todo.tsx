@@ -9,7 +9,7 @@ import { Tick,Cross } from './Tick_Cross'
 
 export default function Todo(props:todoProps) {
   
-
+  
   return (
     <div className='todo' id={'todo'+props.id}>
       <Tick id={props.id} checked={props.isCompleted}/>

@@ -1,4 +1,4 @@
-import {MouseEvent} from 'react'
+import {ChangeEvent} from 'react'
 import { useAuth } from '../../../../Context/AuthContext'
 import './Tick_Cross.scss'
 
@@ -11,10 +11,9 @@ export function Tick(props:tickProps){
     
     const {updateTodo} = useAuth()
 
-    const handleClick= (e:MouseEvent<HTMLInputElement>)=>{
+    const handleClick= (e:ChangeEvent<HTMLInputElement>)=>{
         const checked = (e.target as HTMLInputElement).checked
 
-        console.log(props.id,checked)
         updateTodo(props.id,checked)
     }
     
@@ -22,8 +21,8 @@ export function Tick(props:tickProps){
         <div className="tick">
             <div className="round">
                 <input type="checkbox" id={props.id} 
-                    defaultChecked={props.checked}
-                    onClick={handleClick}    
+                    checked={props.checked}
+                    onChange={handleClick} 
                 />
                 <label  htmlFor={props.id}></label>
             </div>
@@ -36,7 +35,7 @@ export function Cross(props:{id:string}){
     
     const {deleteTodo} = useAuth()
     
-    const handleClick= (e:MouseEvent<HTMLElement>)=>{
+    const handleClick= ()=>{
         deleteTodo(props.id)
     }
 
