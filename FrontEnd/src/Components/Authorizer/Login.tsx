@@ -18,13 +18,14 @@ export default function Login(props:LoginProps) {
 
   const {login} = useAuth()
   
-  const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
+  const  handleSubmit=async (e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
 
     try {
       if(user.current?.value && pass.current?.value)
-      login(user.current?.value,pass.current?.value)
+      await login(user.current?.value,pass.current?.value)
     } catch (error) {
+      console.log(error)
       setStatus({msg:error as string,error:'error'})
     }
   }

@@ -1,6 +1,7 @@
 import { todoProps } from "../types/api"
 import {createContext,useContext,
     useState,
+    // useRef,
     useCallback,
     ReactNode} from 'react'
 
@@ -10,8 +11,8 @@ interface UserData{
 }
 
 interface AuthContextProps extends UserData{
-    login:(username:string,password:string)=>string,
-    register:(username:string,password:string)=>string,
+    login:(username:string,password:string)=>Promise<string>,
+    register:(username:string,password:string)=>Promise<string>,
     logout:()=>void,
     getTodo:()=>void,
     addTodo:(title:string)=>void,
@@ -22,20 +23,25 @@ interface AuthContextProps extends UserData{
 const AuthContext=createContext<AuthContextProps|null>(null)
 
 
+function jsonToEncode(json:object){
+    return new URLSearchParams(Object.entries(json)).toString()
+}
+
 export function useAuth(): AuthContextProps {
     return useContext(AuthContext)!
 }
 
 export function AuthProvider({children}:{children:ReactNode}){
 
-    const localStorageFlag=true
+    const localStorageFlag=false
     const [user,setUser]=useState<string|null>(null)
     const [todoList,setTodoList]=useState<Array<todoProps>|[]>([])
 
+    const apiRoute='https://mulearn-internship-task-production.up.railway.app/api/'
+    const [access,setAccess]=useState('')
     
-    function login(username:string,password:string):string{
-        // console.log('login:',username,password)
-        if (localStorageFlag){
+    async function login(username:string,password:string):Promise<string>{
+        if (localStorageFlag ){
             let doc=JSON.parse(localStorage.getItem('users') ??'{}')
 
             if(!doc[username])
@@ -48,13 +54,31 @@ export function AuthProvider({children}:{children:ReactNode}){
 
             setUser(username)
         }
+        else{
+            const data = await fetch(apiRoute+'login/',{
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                body:jsonToEncode({
+                    username:username,
+                    password:password
+                })
+            })
+
+            const res = await data.json()
+            if(!data.ok)
+                throw "InvalidCredentials"
+            
+            setAccess(res.access)
+            setUser(username)
+        }
 
         return "Login Successful"
     }
 
-    function register(username:string,password:string):string{
-        // console.log('register:',username,password)
-        if (localStorageFlag){
+    async function register(username:string,password:string):Promise<string>{
+        if (localStorageFlag ){
             const doc=JSON.parse(localStorage.getItem('users') ??'{}')
 
             if(doc[username])
@@ -68,6 +92,22 @@ export function AuthProvider({children}:{children:ReactNode}){
 
             localStorage.setItem('users',JSON.stringify(doc))
         }
+        else{
+            
+            const res = await fetch(apiRoute+'register/',{
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                body:jsonToEncode({
+                    username:username,
+                    password:password
+                })
+            })
+
+            if(!res.ok)
+                throw res.statusText
+        }
 
 
         return "User Registered"
@@ -77,20 +117,38 @@ export function AuthProvider({children}:{children:ReactNode}){
         setUser(null);
     }
 
-    const getTodo= useCallback(()=>{
+    const getTodo= useCallback(async ()=>{
 
-        if (localStorageFlag){
+        if (localStorageFlag ){
             if(!user)
                 throw "UserNotFoundatgetTodo"
             const doc=JSON.parse(localStorage.getItem('users') ??'{}')[user!]
-            console.log(doc['todoList'])
             setTodoList(doc['todoList'])
+        }
+        else{
+            try{
+                const data = await fetch(apiRoute+'todo/',{
+                    method:'GET',
+                    headers: {
+                        'Authorization':`Bearer ${access}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+    
+                      },
+                })
+    
+                const res= await data.json()
+                setTodoList(res)
+            }
+            catch (err){
+                console.log(err)
+                setTodoList([])
+            }
         } 
     },[localStorageFlag,user])
     
-    function addTodo(title:string){
+    async function addTodo(title:string){
         
-        if (localStorageFlag){
+        if (localStorageFlag ){
             if(!user)
                 throw "UserNotFound"
 
@@ -107,11 +165,29 @@ export function AuthProvider({children}:{children:ReactNode}){
             setTodoList(doc[user!]['todoList'])
             localStorage.setItem('users',JSON.stringify(doc))
         }
+        else{
+            try{
+                const data = await fetch(apiRoute+'todo/',{
+                    method:'POST',
+                    headers: {
+                        'Authorization':`Bearer ${access}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      },
+                    body:jsonToEncode({title:title})
+                })
+    
+                const res= await data.json()
+                setTodoList(todoList.concat(res))
+            }
+            catch (err){
+                console.log(err)
+            }
+        }
     }
 
-    function updateTodo(id:string,isCompleted:boolean){
+    async function updateTodo(id:string,isCompleted:boolean){
         
-        if(localStorageFlag){
+        if(localStorageFlag ){
             if(!user)
                 throw "UserNotFound"
 
@@ -126,9 +202,26 @@ export function AuthProvider({children}:{children:ReactNode}){
             setTodoList(doc[user!]['todoList'])
             localStorage.setItem('users',JSON.stringify(doc))
         }
+        else{
+            try{
+                const data = await fetch(apiRoute+`todo/${id}/`,{
+                    method:'PUT',
+                    headers: {
+                        'Authorization':`Bearer ${access}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      },
+                })
+    
+                const res:todoProps= await data.json()
+                setTodoList(todoList.filter(item=>item.id!==res.id).concat(res))
+            }
+            catch (err){
+                console.log(err)
+            }
+        }
     }
 
-    function deleteTodo(id:string,clearCompleted=false){
+    async function deleteTodo(id:string,clearCompleted=false){
         if(localStorageFlag){
             if(!user)
                 throw "UserNotFound"
@@ -146,6 +239,38 @@ export function AuthProvider({children}:{children:ReactNode}){
 
             setTodoList(doc[user!]['todoList'])
             localStorage.setItem('users',JSON.stringify(doc))
+        }
+        else{
+            try{
+                if(clearCompleted){
+                    todoList.forEach( async (item)=>{
+                        if(!item.isCompleted) return
+                        
+                        await fetch(apiRoute+`todo/${item.id}/`,{
+                            method:'DELETE',
+                            headers: {
+                                'Authorization':`Bearer ${access}`,
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                              },
+                        })
+                        
+                    })
+                    setTodoList(todoList.filter(item=>!item.isCompleted))
+                }else{
+                    await fetch(apiRoute+`todo/${id}/`,{
+                        method:'DELETE',
+                        headers: {
+                            'Authorization':`Bearer ${access}`,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                    })
+        
+                    setTodoList(todoList.filter(item=>item.id!==id))
+                }
+            }
+            catch (err){
+                console.log(err)
+            }
         }
     }
 
