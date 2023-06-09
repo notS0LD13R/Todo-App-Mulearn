@@ -2,6 +2,13 @@
 
 This is a simple Todo web application built using React, TypeScript, and Vite. It allows users to create, manage, and complete tasks in a convenient and organized manner.
 
+```diff
+- Attention!
+!By changing the localStorageFlag at 
+!src\Context\AuthContext.tsx
+!you can switch between localstorage and API based fetching.
+```
+
 
 ## Features
 
